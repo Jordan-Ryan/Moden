@@ -2,6 +2,9 @@
   "name": "moden",
   "version": "1.0.0",
   "main": "index.ts",
+  "engines": {
+    "node": ">=18 <21"
+  },
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
