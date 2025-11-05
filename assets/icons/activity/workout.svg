@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
+  <g stroke="#FFFFFF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- Generic fitness figure -->
+    <circle cx="24" cy="11" r="2.6" fill="#FFFFFF"/>
+    <path d="M24 14.5 L24 21"/>
+    <path d="M24 18 L18 24"/>
+    <path d="M24 18 L30 24"/>
+    <path d="M20 27 L16 33"/>
+    <path d="M28 27 L32 33"/>
+  </g>
+</svg>
+

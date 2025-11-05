@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
+  <g stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- Walking person silhouette -->
+    <circle cx="18" cy="10" r="2.5" fill="#FFFFFF"/>
+    <path d="M18 12.5 L18 18 L16 26 L14 30"/>
+    <path d="M18 18 L20 24 L22 28"/>
+    <path d="M16 26 L12 28"/>
+    <path d="M22 28 L26 30"/>
+  </g>
+</svg>

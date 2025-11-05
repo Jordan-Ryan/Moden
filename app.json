@@ -2,7 +2,7 @@
   "expo": {
     "name": "Moden",
     "slug": "Moden",
-    "version": "1.0.3",
+    "version": "1.0.9",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -15,19 +15,31 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.modenhealth.app",
+      "buildNumber": "8",
       "infoPlist": {
         "NSHealthShareUsageDescription": "Moden needs access to your health data to display your steps, activity, and fitness metrics.",
         "NSHealthUpdateUsageDescription": "Moden needs permission to read your health data to track your daily activity and nutrition goals.",
         "ITSAppUsesNonExemptEncryption": false
       }
     },
+    "plugins": [
+      [
+        "react-native-health",
+        {
+          "healthSharePermission": "Moden needs access to your health data to display your steps, activity, and fitness metrics.",
+          "healthUpdatePermission": "Moden needs permission to read your health data to track your daily activity and nutrition goals."
+        }
+      ]
+    ],
     "android": {
+      "versionCode": 8,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.modenhealth.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
