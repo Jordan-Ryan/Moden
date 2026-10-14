@@ -1,111 +1,49 @@
-# HealthKit Build Instructions
+# Builds
 
-## Prerequisites
-- ✅ Packages installed (`expo-dev-client`, `react-native-health`)
-- ✅ HealthKit permissions added to `app.json`
-- ✅ `utils/healthKit.ts` created with implementation
+HealthKit reads are implemented in `utils/healthKit.ts`. `context/HealthContext.tsx` calls `checkHealthKitPermissions`, `requestHealthKitPermissions`, and `getHealthDataForDate`. `app.json` includes the usage strings and the `react-native-health` config plugin.
 
-## Build Options
+`/ios` and `/android` are gitignored. They appear only after a local prebuild or `expo run:*`.
 
-### Option A: EAS Build (Recommended - Cloud Build)
+## EAS profiles
 
-**Step 1: Install EAS CLI**
+`eas.json` is already in the repo (`cli.version` `>= 5.2.0`). The build profiles are `development`, `preview`, and `production`. Each sets `NPM_CONFIG_LEGACY_PEER_DEPS=true`. iOS `simulator` is `false` on all three. `development` sets `developmentClient: true` and `distribution: internal`. `preview` and `production` set `distribution: store`.
+
+Examples that match those profile names:
+
 ```bash
-npm install -g eas-cli
+npx eas-cli build --profile development --platform ios
+npx eas-cli build --profile preview --platform ios
+npx eas-cli build --profile production --platform ios
 ```
 
-**Step 2: Login to Expo**
+`eas.json` `submit.production` is `{}`. A submit call uses the EAS CLI's prompts and that empty production submit block:
+
 ```bash
-eas login
+npx eas-cli submit --platform ios --latest
 ```
 
-**Step 3: Configure EAS (if not already done)**
-```bash
-eas build:configure
-```
+`app.json` `extra.eas.projectId` is `c211a03a-f1bd-4340-85fd-649a797d2e01`. This repo does not store EAS build IDs or App Store Connect processing state.
 
-**Step 4: Build for iOS Device**
-```bash
-eas build --profile development --platform ios
-```
+Install EAS CLI separately if it is not on the machine (`npm install -g eas-cli`). Log in with `eas login`. `eas build:configure` rewrites `eas.json`; the file is already present.
 
-This will:
-- Create a development build in the cloud
-- Allow you to install on your device via TestFlight or direct download
-- Takes ~15-20 minutes
+## Local native build
 
-**Step 5: After build completes, install on device**
-- Download the `.ipa` file from the EAS dashboard
-- Install via TestFlight or use the download link
-
----
-
-### Option B: Local Build (Requires Xcode & Apple Developer Account)
-
-**Step 1: Prebuild native code**
 ```bash
 npx expo prebuild
+npm run ios
 ```
 
-This creates the `ios/` folder with native code.
+`npm run ios` is `expo run:ios`. `npm run android` is `expo run:android`. After prebuild, the Xcode workspace is under the generated `ios/` directory. `app.json` `name` is `Moden`, which is the name Expo uses for that project.
 
-**Step 2: Open in Xcode**
-```bash
-open ios/Moden.xcworkspace
-```
+`app.json` already passes HealthKit usage strings through the `react-native-health` plugin:
 
-**Step 3: Configure HealthKit Capability in Xcode**
-1. In Xcode, select your project (Moden) in the left sidebar
-2. Select the "Moden" target
-3. Go to the "Signing & Capabilities" tab
-4. Click the "+ Capability" button
-5. Search for and add "HealthKit"
-6. Make sure your Apple Developer account is selected for signing
+- `healthSharePermission`: `Moden needs access to your health data to display your steps, activity, and fitness metrics.`
+- `healthUpdatePermission`: `Moden needs permission to read your health data to track your daily activity and nutrition goals.`
 
-**Step 4: Connect your iOS device**
-- Connect via USB
-- Trust the computer on your device
-- Select your device in Xcode's device dropdown (top bar)
+The same two strings are `NSHealthShareUsageDescription` and `NSHealthUpdateUsageDescription`.
 
-**Step 5: Build and Run**
-- In Xcode, click the Play button (▶️) or press `Cmd + R`
-- Wait for build to complete (~5-10 minutes first time)
+## What the running app does with HealthKit
 
----
+`isHealthKitAvailable` is true only when the platform is iOS and `AppleHealthKit.initHealthKit` is a function. The code does not contain a separate simulator check.
 
-## After Build: Enable HealthKit Permissions
-
-1. **First Launch**: The app will request HealthKit permissions automatically
-2. **If denied**: Go to Settings > Privacy & Security > Health > Moden
-3. **Enable**: Turn on all the data types you want to share
-
-## Testing HealthKit
-
-Once the app is installed:
-
-1. **Request Permissions**: The app should prompt for HealthKit access
-2. **Grant Permissions**: Allow access to Steps, Workouts, etc.
-3. **View Data**: Navigate to the Today view to see your real health data
-4. **Check Console**: If data isn't showing, check Xcode console or Expo logs
-
-## Troubleshooting
-
-### "HealthKit is not available"
-- Make sure you're running on a **physical iOS device** (not simulator)
-- Verify HealthKit capability is added in Xcode
-
-### "No data showing"
-- Check Health app on your device - do you have steps/workouts recorded?
-- Grant permissions in Settings > Privacy & Security > Health > Moden
-- Check console logs for errors
-
-### Build Errors
-- **"No signing certificate"**: Make sure you're logged into Xcode with your Apple ID
-- **"HealthKit capability not available"**: You need a paid Apple Developer account ($99/year)
-- **"react-native-health not found"**: Run `cd ios && pod install && cd ..`
-
-## Next Steps After Successful Build
-
-1. Update your app code to use `requestHealthKitPermissions()` on first launch
-2. Replace dummy data calls with `getHealthDataForDate()` from `utils/healthKit.ts`
-3. Test on multiple dates to ensure data fetching works correctly
+`HealthProvider` requests read access when Today loads. The permission object's `write` array is empty. There is no "Grant HealthKit Permissions" button in the screens.

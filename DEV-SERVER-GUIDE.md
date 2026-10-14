@@ -1,71 +1,43 @@
-# Connecting Development Build to Dev Server
+# Development server
 
-After installing the development build on your device, you need to connect it to a development server to load your JavaScript code.
-
-## Step 1: Start the Development Server
-
-Run this command in your project directory:
+`package.json` already defines the dev-client start scripts:
 
 ```bash
-npx expo start --dev-client
+npm start
+# or
+npm run dev
 ```
 
-This will:
-- Start the Metro bundler
-- Show a QR code and connection options
-- Display the server URL (usually `exp://192.168.x.x:8081`)
+Both run `expo start --dev-client`. The CLI prints the Metro URL. Use that URL. Do not assume a fixed host.
 
-## Step 2: Connect Your Device
+`expo-dev-client` is a dependency. These scripts pass `--dev-client`, so the process is the one used with a development build, not a separate Expo Go script.
 
-### Option A: Same Wi-Fi Network (Recommended)
-1. Make sure your **iPhone** and **computer** are on the **same Wi-Fi network**
-2. Open the **Moden** app on your device
-3. It should automatically detect and connect to the dev server
-4. The app will reload with your latest code
+## Connect a development build
 
-### Option B: Tunnel Mode (If Same Network Doesn't Work)
-1. In the terminal where `expo start` is running, press **`s`** to open connection options
-2. Select **"Tunnel"** mode
-3. Or restart with: `npx expo start --dev-client --tunnel`
-4. Open the app on your device - it should connect automatically
+1. Start `npm start` in the repository root.
+2. Open the Moden development build on the device or simulator.
+3. If the app does not attach on its own, open the dev menu and enter the URL printed by the CLI.
 
-### Option C: Manual Connection
-1. Shake your device (or press `Cmd+D` in simulator) to open the dev menu
-2. Tap **"Enter URL manually"**
-3. Enter the URL shown in your terminal (e.g., `exp://192.168.1.100:8081`)
+Tunnel mode is a start flag, not a separate npm script:
 
-## Troubleshooting
-
-### "No development server found"
-- Make sure the dev server is running (`npx expo start --dev-client`)
-- Check that both devices are on the same Wi-Fi network
-- Try tunnel mode: `npx expo start --dev-client --tunnel`
-- Restart the app on your device
-
-### "Unable to connect"
-- Check your firewall - port 8081 should be open
-- Try tunnel mode (bypasses network issues)
-- Make sure your device can reach your computer's IP address
-
-### App won't reload
-- Shake device → "Reload"
-- Or press `r` in the terminal to reload
-
-## Quick Start Script
-
-You can add this to your `package.json` scripts:
-
-```json
-"scripts": {
-  "dev": "expo start --dev-client"
-}
+```bash
+npx expo start --dev-client --tunnel
 ```
 
-Then run: `npm run dev`
+Other flags accepted by the same CLI entry are `--localhost` and `--lan`.
 
-## Important Notes
+Reload from the dev menu, or press `r` in the Expo CLI when that prompt is shown.
 
-- The development build is just the native shell - your JavaScript code still runs from the dev server
-- Changes to native code (like adding new native modules) require rebuilding
-- Changes to JavaScript/TypeScript reload automatically when connected
-- Keep the dev server running while developing
+## What reloads
+
+JavaScript and TypeScript changes reload through Metro while this server is running. Native module or config-plugin changes are picked up by a new native build (`npm run ios`, `npm run android`, or an EAS build). `/ios` and `/android` are gitignored and are not in the committed tree.
+
+## Other run scripts
+
+| Script | Command |
+| --- | --- |
+| `npm run ios` | `expo run:ios` |
+| `npm run android` | `expo run:android` |
+| `npm run web` | `expo start --web` |
+
+On web and Android, `utils/healthKit.ts` reports HealthKit as unavailable because the availability check requires `Platform.OS === 'ios'` and a linked `initHealthKit` function.
